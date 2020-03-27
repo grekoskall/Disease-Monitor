@@ -34,37 +34,43 @@ bool Date::operator > (Date &c2){
   strcpy(c_date, c2.get_date());
   if( strcmp(c_date, "-") == 0){
     free(c_date);
-    return true;
+    return false;
   }
   char* t_date = (char*)malloc(sizeof(char)*(strlen(this->get_date())+1));
   strcpy(t_date, date);
 
   char *t_day;
   t_day = strtok(t_date, "-");
+
   char *t_month;
-  t_month = strtok(t_date, "-");
+  t_month = strtok(NULL, "-");
   char *t_year;
-  t_year = strtok(t_date, "-");
+  t_year = strtok(NULL, "-");
 
   char *c_day;
   c_day = strtok(c_date, "-");
   char *c_month;
-  c_month = strtok(c_date, "-");
+  c_month = strtok(NULL, "-");
   char *c_year;
-  c_year = strtok(c_date, "-");
+  c_year = strtok(NULL, "-");
 
-  free(t_date);
-  free(c_date);
-  if (t_year > c_year) {
+  if (strcmp(t_year, c_year) == 1) {
+    free(t_date);
+    free(c_date);
     return true;
-  } else if (t_year == c_year && t_month > c_month){
+  } else if ((strcmp(t_year, c_year) == 0) && (strcmp(t_month, c_month) == 1)){
+    free(t_date);
+    free(c_date);
     return true;
-  } else if (t_year == c_year && t_month == c_month && t_day > c_day){
+  } else if ((strcmp(t_year, c_year) == 0) && (strcmp(t_month, c_month) == 0) && (strcmp(t_day, c_day) == 1)){
+    free(t_date);
+    free(c_date);
     return true;
-  } else{
+  } else {
+    free(t_date);
+    free(c_date);
     return false;
   }
-
 }
 
 bool Date::operator <(Date &c2){

@@ -89,6 +89,10 @@ int Record::get_recordID(){
   return recordID;
 }
 
+Date* Record::get_entryDate(){
+  return entryDate;
+}
+
 void Record::print_record(){
   cout << "----RECORD\t: " << recordID << endl;
   cout << "||  NAME\t: " << patientFirstName << " " << patientLastName << endl;

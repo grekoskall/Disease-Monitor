@@ -23,6 +23,7 @@ class Record {
     ~Record();
 
     int get_recordID();
+    Date* get_entryDate();
     void print_record();
 };
 

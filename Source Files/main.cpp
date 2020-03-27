@@ -3,8 +3,9 @@
 #include <fstream>
 #include <sstream>
 #include <getopt.h>
-#include "record.h"
 #include "linked_list.h"
+#include "hashtable.h"
+#include "trees.h"
 
 using namespace std;
 
@@ -15,7 +16,8 @@ static struct option long_options[] = {
 };
 
 int main(int argc, char *argv[]){
-  LinkedList ll;
+  LinkedList ll; // Linked list that will hold the records
+
   int dis_ht_noe, cou_ht_noe, bucket_size;
   char *records_file;
 
@@ -49,6 +51,13 @@ int main(int argc, char *argv[]){
         break;
     }
   }
+  // Now we have all command line arguments passed to variables inside main
+  // We can now create the data structures
+  HashTable disease_ht(dis_ht_noe, bucket_size);
+  //cout << dis_ht_noe << bucket_size << endl;
+  HashTable country_ht(cou_ht_noe, bucket_size);
+
+  char *joker;
 
   ifstream file;
   file.open(records_file);
@@ -59,7 +68,7 @@ int main(int argc, char *argv[]){
         istringstream ss(line);
 
         while(ss){
-
+          // a=recordID, b=patient First name, c=patient Last name, d=disease, e=country, f=Entry date, g=Exit date
           string a, b, c, d, e, f, g;
           ss >> a >> b >> c >> d >> e >> f >> g;
           //cout << a << b << c << d << e << f << g << endl;
@@ -67,7 +76,7 @@ int main(int argc, char *argv[]){
 
           Date *new_entryDate = new Date(f);
           Date *new_exitDate = new Date(g);
-          if(*new_exitDate < *new_entryDate){
+          if(*new_entryDate > *new_exitDate){
             // Record is invalid --> ignore
             cout << "Invalid record" << endl;
             delete new_entryDate;
@@ -75,11 +84,18 @@ int main(int argc, char *argv[]){
           } else {
             // Record is valid --> add to list
             Record  *new_record = new Record(stoi(a), b.c_str(), c.c_str(), d.c_str(), e.c_str(), new_entryDate, new_exitDate);
+
             if( ll.add(new_record) == false){
                 // Record with the same ID already exists --> ignore
                 delete new_record;
                 cout << "Duplicate ID" << endl;
             }
+            // Record is now added to the linked list
+
+            // Now add the data to the hashtables and update the corrensponding trees
+            disease_ht.add(d.c_str(), new_record);
+            //cout << "and out" << endl;
+            country_ht.add(e.c_str(), new_record);
           }
         }
     }
@@ -90,5 +106,21 @@ int main(int argc, char *argv[]){
 
   ll.print_list();
 
+  cout << "\t- DISEASE HT -" << endl;
+  disease_ht.show();
+  cout << "\t- END OF HT -" << endl;
+  //cout << endl;
+  cout << "\t- COUNTRY HT -" << endl;
+  country_ht.show();
+  cout << "\t- END OF HT -" << endl;
+  //cout << endl;
+
+  string str;
+  string exit_str = ("/exit");
+  while(str.compare(exit_str) != 0){
+    cout << " - Please enter your command -" << endl;
+    getline(cin, str);
+    cout << str << endl;
+  }
   free(records_file);
 }
