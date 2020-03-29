@@ -1,6 +1,7 @@
 #ifndef _WBST_H_
 #define _WBST_H_
 #include "record.h"
+#include "l_item.h"
 
 enum color_t { BLACK, RED, NO};
 
@@ -28,11 +29,18 @@ class TreeNode{
 
     Date* get_key();
     enum color_t get_color();
+    int get_size();
+    char* get_country();
+    char* get_disease();
+    Record* get_record();
 
     void set_right(TreeNode *);
     void set_left(TreeNode *);
     void set_parent(TreeNode *);
     void set_color(enum color_t);
+
+    void set_size(int);
+    void increase_size();
 
     void rotate_left();
     void rotate_right();
@@ -66,6 +74,30 @@ class RBTree{
     void show();
     void print_tree(TreeNode *);
     void delete_recurse(TreeNode*);
+
+    void global_disease_stats();
+    void global_disease_stats(Date *, Date *);
+    int global_disease_stats(Date *, Date *, TreeNode *);
+
+    void disease_frequency(Date *, Date *, const char *);
+    int disease_frequency(Date *, Date *, const char *, TreeNode *);
+
+    void topk_diseases(int);
+    void topk_diseases(TreeNode *, LLTree *);
+    void topk_diseases(int, Date *, Date *);
+    void topk_diseases(TreeNode *, LLTree *, Date *, Date *);
+
+    void topk_countries(int);
+    void topk_countries(TreeNode *, LLTree *);
+    void topk_countries(int, Date *, Date *);
+    void topk_countries(TreeNode *, LLTree *, Date *, Date *);
+
+    void num_current_patients_1();
+    void num_current_patients_1(TreeNode *, LNTree *);
+    void num_current_patients_2();
+    int num_current_patients_2(TreeNode *);
+
 };
+
 
 #endif

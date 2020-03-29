@@ -17,7 +17,22 @@ class BucketRecord{
     RBTree* get_tree();
     void set_name(const char*);
     void set_tree(RBTree*);
-};
+
+    void global_disease_stats();
+    void global_disease_stats(Date *, Date *);
+
+    void disease_frequency(Date *, Date *, const char *);
+    void disease_frequency(Date *, Date *, const char *, const char *);
+
+    void topk_diseases(int);
+    void topk_diseases(int, Date *, Date *);
+
+    void topk_countries(int);
+    void topk_countries(int, Date *, Date *);
+
+    void num_current_patients_1();  // Prints all the recrods
+    void num_current_patients_2();  // Pritns the number of records
+  };
 
 class Bucket{
   private:
@@ -36,6 +51,20 @@ class Bucket{
     bool add(const char *, Record *);
 
     void show();
+    void global_disease_stats();
+    void global_disease_stats(Date *, Date *);
+
+    void disease_frequency(Date *, Date *, const char *);
+    void disease_frequency(Date *, Date *, const char *, const char *);
+
+    void topk_diseases(int, const char *);
+    void topk_diseases(int, const char *, Date *, Date *);
+
+    void topk_countries(int, const char *);
+    void topk_countries(int, const char *, Date *, Date *);
+
+    void num_current_patients();
+    void num_current_patients(const char *);
 };
 
 class HashTable{
@@ -53,6 +82,20 @@ class HashTable{
     int hash(const char *);
 
     void show();
+    void global_disease_stats();
+    void global_disease_stats(Date *, Date *);
+
+    void disease_frequency(Date *, Date *, const char *);
+    void disease_frequency(Date *, Date *, const char *, const char *);
+
+    void topk_diseases(int, const char *);
+    void topk_diseases(int, const char *, Date *, Date *);
+
+    void topk_countries(int, const char *);
+    void topk_countries(int, const char *, Date *, Date *);
+
+    void num_current_patients();
+    void num_current_patients(const char*);
 };
 
 #endif

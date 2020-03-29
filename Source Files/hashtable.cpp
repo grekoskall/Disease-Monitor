@@ -39,6 +39,50 @@ void BucketRecord::set_tree(RBTree *tree){
   pointer = tree;
 }
 
+void BucketRecord::global_disease_stats(){
+  pointer->global_disease_stats();
+}
+
+void BucketRecord::global_disease_stats(Date *date1, Date *date2){
+  pointer->global_disease_stats(date1, date2);
+}
+
+void BucketRecord::disease_frequency(Date *date1, Date *date2, const char *virus){
+  if(strcmp(virus, record_name) == 0){
+    pointer->global_disease_stats(date1, date2);
+  }
+}
+
+void BucketRecord::disease_frequency(Date *date1, Date *date2, const char *virus, const char *country){
+  if(strcmp(virus, record_name) == 0){
+    pointer->disease_frequency(date1, date2, country);
+  }
+}
+
+void BucketRecord::topk_diseases(int k){
+  pointer->topk_diseases(k);
+}
+
+void BucketRecord::topk_diseases(int k, Date *date1, Date *date2){
+  pointer->topk_diseases(k, date1, date2);
+}
+
+void BucketRecord::topk_countries(int k){
+  pointer->topk_countries(k);
+}
+
+void BucketRecord::topk_countries(int k, Date *date1, Date *date2){
+  pointer->topk_countries(k, date1, date2);
+}
+
+void BucketRecord::num_current_patients_1(){
+  pointer->num_current_patients_1();
+}
+
+void BucketRecord::num_current_patients_2(){
+  pointer->num_current_patients_2();
+}
+
 Bucket::Bucket() : data(NULL), bucket_size(0), offset(0), next_bucket(NULL){
 }
 
@@ -177,7 +221,120 @@ void Bucket::show(){
       cout << "||--NEXT:" << endl;
       next_bucket->show();
     }
+  }
+}
 
+void Bucket::global_disease_stats(){
+  for(int i = 0; i < offset ; i++){
+    cout << "---Disease: " << data[i]->get_name() << endl;
+    data[i]->global_disease_stats();
+  }
+  if(next_bucket != NULL){
+    next_bucket->global_disease_stats();
+  }
+}
+
+void Bucket::global_disease_stats(Date *date1, Date *date2){
+  for(int i = 0; i < offset ; i++){
+    cout << "---Disease: " << data[i]->get_name() << endl;
+    data[i]->global_disease_stats(date1, date2);
+  }
+  if(next_bucket != NULL){
+    next_bucket->global_disease_stats(date1, date2);
+  }
+}
+
+void Bucket::disease_frequency(Date *date1, Date *date2, const char* virus){
+  for(int i = 0; i < offset ; i++){
+    if(strcmp(virus, data[i]->get_name()) == 0){
+      cout << "--Disease: " << data[i]->get_name() << endl;
+      data[i]->disease_frequency(date1, date2, virus);
+    }
+  }
+  if(next_bucket != NULL){
+    next_bucket->disease_frequency(date1, date2, virus);
+  }
+}
+
+void Bucket::disease_frequency(Date *date1, Date *date2, const char* virus, const char* country){
+  for(int i = 0; i < offset; i++){
+    if(strcmp(virus, data[i]->get_name()) == 0){
+      cout << "---Disease: " << data[i]->get_name() << endl;
+      data[i]->disease_frequency(date1, date2, virus, country);
+    }
+  }
+  if(next_bucket != NULL){
+    next_bucket->disease_frequency(date1, date2, virus, country);
+  }
+}
+
+void Bucket::topk_diseases(int k, const char *country){
+  for(int i = 0; i < offset; i++){
+    if(strcmp(country, data[i]->get_name()) == 0){
+      cout << "---Country: " << data[i]->get_name() << endl;
+      data[i]->topk_diseases(k);
+    }
+  }
+  if(next_bucket != NULL){
+    next_bucket->topk_diseases(k, country);
+  }
+}
+
+void Bucket::topk_diseases(int k, const char *country, Date *date1, Date *date2){
+  for(int i = 0; i < offset; i++){
+    if(strcmp(country, data[i]->get_name()) == 0){
+      cout << "---Country: " << data[i]->get_name() << endl;
+      data[i]->topk_diseases(k, date1, date2);
+    }
+  }
+  if(next_bucket != NULL){
+    next_bucket->topk_diseases(k, country, date1, date2);
+  }
+}
+
+void Bucket::topk_countries(int k, const char *disease){
+  for(int i = 0; i < offset; i++){
+    if(strcmp(disease, data[i]->get_name()) == 0){
+      cout << "---Disease: " << data[i]->get_name() << endl;
+      data[i]->topk_countries(k);
+    }
+  }
+  if(next_bucket != NULL){
+    next_bucket->topk_countries(k, disease);
+  }
+}
+
+void Bucket::topk_countries(int k, const char *disease, Date *date1, Date *date2){
+  for(int i = 0; i < offset; i++){
+    if(strcmp(disease, data[i]->get_name()) == 0){
+      cout << "---Disease: " << data[i]->get_name() << endl;
+      data[i]->topk_countries(k, date1, date2);
+    }
+  }
+  if(next_bucket != NULL){
+    next_bucket->topk_countries(k, disease, date1, date2);
+  }
+}
+
+void Bucket::num_current_patients(){
+  for(int i = 0; i < offset; i++){
+    cout << "---Disease: " << data[i]->get_name() << endl;
+    data[i]->num_current_patients_1();
+  }
+  if(next_bucket != NULL){
+    next_bucket->num_current_patients();
+  }
+}
+
+void Bucket::num_current_patients(const char *disease){
+  for(int i = 0; i < offset; i++){
+    if(strcmp(disease, data[i]->get_name()) == 0){
+      cout << "---Disease: " << data[i]->get_name() << endl;
+      data[i]->num_current_patients_2();
+    }
+  }
+  if(next_bucket != NULL){
+    next_bucket->num_current_patients(disease);
   }
 }
 
@@ -221,6 +378,86 @@ void HashTable::show(){
     if(head[i]->get_offset() > 0 ){
       cout << "---Bucket no." << i << ": " << endl;
       head[i]->show();
+    }
+  }
+}
+
+void HashTable::global_disease_stats(){
+  for(int i = 0 ; i < entries ; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->global_disease_stats();
+    }
+  }
+}
+
+void HashTable::global_disease_stats(Date *date1, Date *date2){
+  for(int i = 0 ; i < entries ; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->global_disease_stats(date1, date2);
+    }
+  }
+}
+
+void HashTable::disease_frequency(Date *date1, Date *date2, const char *virus){
+  for(int i = 0; i < entries ; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->disease_frequency(date1, date2, virus);
+    }
+  }
+}
+
+void HashTable::disease_frequency(Date *date1, Date *date2, const char *virus, const char *country){
+  for(int i = 0; i < entries ; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->disease_frequency(date1, date2, virus, country);
+    }
+  }
+}
+
+void HashTable::topk_diseases(int k, const char *country){
+  for(int i = 0; i < entries; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->topk_diseases(k, country);
+    }
+  }
+}
+
+void HashTable::topk_diseases(int k, const char *country, Date *date1, Date *date2){
+  for(int i = 0; i < entries; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->topk_diseases(k, country, date1, date2);
+    }
+  }
+}
+
+void HashTable::topk_countries(int k, const char *disease){
+  for(int i = 0; i < entries; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->topk_countries(k, disease);
+    }
+  }
+}
+
+void HashTable::topk_countries(int k, const char *disease, Date *date1, Date *date2){
+  for(int i = 0; i < entries; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->topk_countries(k, disease, date1, date2);
+    }
+  }
+}
+
+void HashTable::num_current_patients(){
+  for(int i = 0; i < entries ; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->num_current_patients();
+    }
+  }
+}
+
+void HashTable::num_current_patients(const char *disease){
+  for(int i = 0 ; i < entries; i++){
+    if(head[i]->get_offset() > 0){
+      head[i]->num_current_patients(disease);
     }
   }
 }

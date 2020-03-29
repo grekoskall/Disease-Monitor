@@ -24,6 +24,11 @@ class Record {
 
     int get_recordID();
     Date* get_entryDate();
+    char* get_country();
+    char* get_disease();
+
+    void set_exit_date(Date *);
+
     void print_record();
 };
 

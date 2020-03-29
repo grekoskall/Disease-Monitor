@@ -36,6 +36,10 @@ void Node::print_node(){
   data->print_record();
 }
 
+void Node::record_patient_exit(Date *new_exit_date){
+  data->set_exit_date(new_exit_date);
+}
+
 LinkedList::LinkedList() : head(NULL){
 }
 
@@ -100,4 +104,18 @@ void LinkedList::print_list(){
     temp = temp->get_next();
   }
   cout << "\t\t- END OF LIST -" << endl;
+}
+
+bool LinkedList::record_patient_exit(int recordID, Date *new_exit_date){
+  Node *temp;
+  temp = head;
+  while(temp != NULL){
+    if(temp->get_recordID() == recordID){
+      // Record was found, now update the exit date.
+      temp->record_patient_exit(new_exit_date);
+      return true;
+    }
+    temp = temp->get_next();
+  }
+  return false;
 }

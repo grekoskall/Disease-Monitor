@@ -1,12 +1,14 @@
 #include <iostream>
+#include <cstring>
 #include "trees.h"
+
 
 using namespace std;
 
-TreeNode::TreeNode() : key(NULL), value(NULL), left(NULL), right(NULL), parent(NULL), size(0), color(NO){
+TreeNode::TreeNode() : key(NULL), value(NULL), left(NULL), right(NULL), parent(NULL), size(1), color(NO){
 }
 
-TreeNode::TreeNode(Date *date, Record *record) : key(date), value(record), left(NULL), right(NULL), parent(NULL), size(0), color(NO){
+TreeNode::TreeNode(Date *date, Record *record) : key(date), value(record), left(NULL), right(NULL), parent(NULL), size(1), color(NO){
 }
 
 TreeNode::~TreeNode(){
@@ -61,6 +63,22 @@ enum color_t TreeNode::get_color(){
   return color;
 }
 
+int TreeNode::get_size(){
+  return size;
+}
+
+char* TreeNode::get_country(){
+  return value->get_country();
+}
+
+char* TreeNode::get_disease(){
+  return value->get_disease();
+}
+
+Record* TreeNode::get_record(){
+  return value;
+}
+
 void TreeNode::set_right(TreeNode* node){
   right = node;
 }
@@ -75,6 +93,14 @@ void TreeNode::set_parent(TreeNode* node){
 
 void TreeNode::set_color(enum color_t col){
   color = col;
+}
+
+void TreeNode::set_size(int s){
+  size = s;
+}
+
+void TreeNode::increase_size(){
+  size++;
 }
 
 void TreeNode::rotate_left(){
@@ -161,16 +187,20 @@ void TreeNode::insert_recurse(TreeNode *root, TreeNode *node){
     if ( (*node->get_key()) < (*root->get_key()) ){
       if ( root->get_left() != NULL ){
         insert_recurse(root->get_left(), node);
+        root->increase_size();
         return;
       } else {
+        root->increase_size();
         root->set_left(node);
       }
     } else {
       // node->key >= root->key
       if ( root->get_right() != NULL){
         insert_recurse(root->get_right(), node);
+        root->increase_size();
         return;
       } else {
+        root->increase_size();
         root->set_right(node);
       }
     }
@@ -181,6 +211,7 @@ void TreeNode::insert_recurse(TreeNode *root, TreeNode *node){
   node->set_left(NULL);
   node->set_right(NULL);
   node->set_color(RED);
+  node->set_size(1);
 }
 
 void TreeNode::insert_repair_tree(TreeNode *node){
@@ -289,4 +320,166 @@ void RBTree::delete_recurse(TreeNode *node){
   delete node;
   delete_recurse(temp_r);
   delete_recurse(temp_l);
+}
+
+void RBTree::global_disease_stats(){
+  cout << "||--No. of recorded hits: " << root->get_size() << endl;
+}
+
+void RBTree::global_disease_stats(Date *date1, Date *date2){
+  cout << "||--No. of recorded hits: " << global_disease_stats(date1, date2, root) << endl;
+}
+
+int RBTree::global_disease_stats(Date *date1, Date *date2, TreeNode *node){
+  if(node == NULL){
+    return 0;
+  }
+  Date *dd = node->get_key();
+  if(*date1 > *dd){
+    // means that starting date is after the date of the node.
+    // try to go to the right subtree and do the same.
+    return global_disease_stats(date1, date2, node->get_right());
+  } else if(*dd > *date2){
+    // means that ending date is before the date of the node.
+    return global_disease_stats(date1, date2, node->get_left());
+  } else{
+    // means that the node date is between the date1 and date2
+    return node->get_size();
+  }
+}
+
+void RBTree::disease_frequency(Date *date1, Date *date2, const char *country){
+  cout << "||--No. of recorder hits: " << disease_frequency(date1, date2, country, root);
+}
+
+int RBTree::disease_frequency(Date *date1, Date *date2, const char *country, TreeNode *node){
+  static int result = 0;
+  if(node == NULL){
+    return 0;
+  }
+  Date *dd = node->get_key();
+  if(*date1 > *dd){
+    return disease_frequency(date1, date2, country, node->get_right());
+  } else if (*dd > *date2){
+    return disease_frequency(date1, date2, country, node->get_left());
+  } else {
+    if(strcmp(country, node->get_country()) == 0){
+      result++;
+    }
+    disease_frequency(date1, date2, country, node->get_right());
+    disease_frequency(date1, date2, country, node->get_left());
+  }
+  return result;
+}
+
+void RBTree::topk_diseases(int k){
+  LLTree *ll = new LLTree();
+  topk_diseases(root, ll);
+  ll->topk_diseases(k);
+  delete ll;
+}
+
+void RBTree::topk_diseases(TreeNode *node, LLTree *ll){
+  if(node == NULL){
+    return;
+  } else {
+    ll->add(node->get_disease());
+    topk_diseases(node->get_right(), ll);
+    topk_diseases(node->get_left(), ll);
+  }
+}
+
+void RBTree::topk_diseases(int k, Date *date1, Date *date2){
+  LLTree *ll = new LLTree();
+  topk_diseases(root, ll, date1, date2);
+  ll->topk_diseases(k);
+  delete ll;
+}
+
+void RBTree::topk_diseases(TreeNode *node, LLTree *ll, Date *date1, Date *date2){
+  if(node == NULL){
+    return;
+  }
+  Date *dd = node->get_key();
+  if(*date1 > *dd){
+    return;
+  } else if(*dd > *date2){
+    return;
+  } else {
+    ll->add(node->get_disease());
+    topk_diseases(node->get_right(), ll, date1, date2);
+    topk_diseases(node->get_left(), ll, date1, date2);
+  }
+}
+
+void RBTree::topk_countries(int k){
+  LLTree *ll = new LLTree();
+  topk_countries(root, ll);
+  delete ll;
+}
+
+void RBTree::topk_countries(TreeNode *node, LLTree *ll){
+  if(node == NULL){
+    return;
+  } else {
+    ll->add(node->get_country());
+    topk_countries(node->get_right(), ll);
+    topk_countries(node->get_left(), ll);
+  }
+}
+
+void RBTree::topk_countries(int k, Date *date1, Date *date2){
+  LLTree *ll = new LLTree();
+  topk_countries(root, ll, date1, date2);
+  ll->topk_countries(k);
+  delete ll;
+}
+
+void RBTree::topk_countries(TreeNode *node, LLTree *ll, Date *date1, Date *date2){
+  if(node == NULL){
+    return;
+  }
+  Date *dd = node->get_key();
+  if(*date1 > *dd){
+    return;
+  } else if(*dd > *date2){
+    return;
+  } else {
+    ll->add(node->get_country());
+    topk_countries(node->get_right(), ll, date1, date2);
+    topk_countries(node->get_left(), ll, date1, date2);
+  }
+}
+
+void RBTree::num_current_patients_1(){
+  LNTree *ln = new LNTree();
+  num_current_patients_1(root, ln);
+  ln->num_current_patients();
+  delete ln;
+}
+
+void RBTree::num_current_patients_1(TreeNode *node, LNTree *ln){
+  if(node == NULL){
+    return;
+  } else {
+    if(strcmp(node->get_key()->get_date(), "-") == 0){
+      ln->add(node->get_record());
+    }
+    num_current_patients_1(node->get_right(), ln);
+    num_current_patients_1(node->get_left(), ln);
+  }
+}
+
+void RBTree::num_current_patients_2(){
+  cout << num_current_patients_2(root) << " still hospitalized."  << endl;
+}
+
+int RBTree::num_current_patients_2(TreeNode *node){
+  static int patients = 0;
+  if(strcmp(node->get_key()->get_date(), "-") == 0){
+    patients++;
+  }
+  num_current_patients_2(node->get_right());
+  num_current_patients_2(node->get_left());
+  return patients;
 }

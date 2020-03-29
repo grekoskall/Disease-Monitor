@@ -93,6 +93,19 @@ Date* Record::get_entryDate(){
   return entryDate;
 }
 
+char* Record::get_country(){
+  return country;
+}
+
+char* Record::get_disease(){
+  return diseaseID;
+}
+
+void Record::set_exit_date(Date *new_exit_date){
+  delete exitDate;
+  exitDate = new_exit_date;
+}
+
 void Record::print_record(){
   cout << "----RECORD\t: " << recordID << endl;
   cout << "||  NAME\t: " << patientFirstName << " " << patientLastName << endl;

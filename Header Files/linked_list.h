@@ -20,6 +20,8 @@ class Node{
     void set_next(Node *);
 
     void print_node();
+
+    void record_patient_exit(Date *);
 };
 
 class LinkedList{
@@ -38,6 +40,8 @@ class LinkedList{
       bool check_double_record(int);
 
       void print_list();
+
+      bool record_patient_exit(int, Date *);
 };
 
 #endif
